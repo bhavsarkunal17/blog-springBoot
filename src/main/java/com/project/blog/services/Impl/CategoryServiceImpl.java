@@ -44,8 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getCategories() {
         List<Category> categories = this.categoryRepo.findAll();
         return categories.stream()
-                .map((category) -> this.modelMapper.map(category,CategoryDto.class))
-                .collect(Collectors.toList());
+                .map((category) -> this.modelMapper.map(category,CategoryDto.class)).toList();
 
     }
 
