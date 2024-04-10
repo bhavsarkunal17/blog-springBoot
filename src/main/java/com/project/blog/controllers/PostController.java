@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import com.project.blog.payloads.ApiResponse;
 import com.project.blog.payloads.PostDto;
+import com.project.blog.payloads.PostResponse;
 import com.project.blog.services.Impl.PostServiceImpl;
 import com.project.blog.services.PostService;
 import lombok.Getter;
@@ -27,9 +28,13 @@ public class PostController {
     }
 
     @GetMapping("/get")
-    ResponseEntity<List<PostDto>> getAllPosts(){
-        List<PostDto> postDtoList = this.postService.getAllPosts();
-        return new ResponseEntity<>(postDtoList,HttpStatus.OK);
+    ResponseEntity<PostResponse> getAllPosts(@RequestParam(value = "pageNo", defaultValue = "0",required = false) int pageNo,
+                                             @RequestParam(value = "pageSize",defaultValue = "5",required = false) int pageSize,
+                                             @RequestParam(value = "sortField",defaultValue = "postId",required = false) String sortField,
+                                             @RequestParam(value = "sortType",defaultValue = "asc",required = false) String sortType){
+
+        PostResponse postResponse = this.postService.getAllPosts(pageNo,pageSize,sortField,sortType);
+        return new ResponseEntity<>(postResponse,HttpStatus.OK);
     }
 
     @GetMapping("/get/{id}")

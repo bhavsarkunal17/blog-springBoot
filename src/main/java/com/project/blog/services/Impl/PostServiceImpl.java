@@ -5,12 +5,16 @@ import com.project.blog.model.Category;
 import com.project.blog.model.Post;
 import com.project.blog.model.User;
 import com.project.blog.payloads.PostDto;
+import com.project.blog.payloads.PostResponse;
 import com.project.blog.repositories.CategoryRepo;
 import com.project.blog.repositories.PostRepo;
 import com.project.blog.repositories.UserRepo;
 import com.project.blog.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,14 +23,20 @@ import java.util.List;
 @Service
 public class PostServiceImpl implements PostService {
 
+
+    private final PostRepo postRepo;
+    private final CategoryRepo categoryRepo;
+    private final UserRepo userRepo;
+    private final ModelMapper modelMapper;
+
     @Autowired
-    PostRepo postRepo;
-    @Autowired
-    CategoryRepo categoryRepo;
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    ModelMapper modelMapper;
+    public PostServiceImpl(PostRepo postRepo, CategoryRepo categoryRepo, UserRepo userRepo, ModelMapper modelMapper) {
+        this.postRepo = postRepo;
+        this.categoryRepo = categoryRepo;
+        this.userRepo = userRepo;
+        this.modelMapper = modelMapper;
+    }
+
     @Override
     public PostDto createPost(PostDto postDto, int userId, int categoryId) {
 
@@ -48,10 +58,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> postList = this.postRepo.findAll();
-        List<PostDto> postDtoList = postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
-        return postDtoList;
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortField, String sortType) {
+        Sort sort = sortType.equalsIgnoreCase("asc")?Sort.by(sortField).ascending():Sort.by(sortField).descending();
+
+        PageRequest pageRequest = PageRequest.of(pageNo,pageSize,sort);
+        Page<Post> postPage = this.postRepo.findAll(pageRequest);
+        List<PostDto> postDtoList = postPage.getContent().stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+        return generatePostRespone(postDtoList,postPage);
+    }
+
+    private PostResponse generatePostRespone(List<PostDto> postDtoList, Page<Post> postPage) {
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtoList);
+        postResponse.setPageNumber(postPage.getNumber());
+        postResponse.setPageSize(postPage.getSize());
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPages(postPage.getTotalPages());
+        postResponse.setLastPage(postPage.isLast());
+        return postResponse;
     }
 
     @Override
