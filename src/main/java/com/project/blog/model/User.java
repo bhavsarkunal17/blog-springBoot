@@ -25,5 +25,8 @@ public class User {
     private String about;
     @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Post> postList = new ArrayList<>();
+    @OneToMany(mappedBy = "commentedBy",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Comment> commentList;
+
    
 }

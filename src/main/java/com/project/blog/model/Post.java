@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -28,4 +29,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
+
+    @OneToMany(mappedBy = "inPost",cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }
