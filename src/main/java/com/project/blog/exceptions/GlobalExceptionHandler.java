@@ -4,9 +4,11 @@ import com.project.blog.payloads.ApiResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -37,6 +39,13 @@ public class GlobalExceptionHandler {
 
         ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    ResponseEntity<ApiResponse>badCredentialException(BadCredentialsException ex){
+
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
 }
