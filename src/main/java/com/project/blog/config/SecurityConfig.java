@@ -45,9 +45,10 @@ public class SecurityConfig{
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        authz -> authz.requestMatchers("/api/v1/auth/token").permitAll()
+                        authz -> authz.requestMatchers("/api/v1/auth/**").permitAll()
                                 .anyRequest().authenticated()
-                ).exceptionHandling(exceptionHandlingConfigurer-> {
+                )
+                .exceptionHandling(exceptionHandlingConfigurer-> {
                     exceptionHandlingConfigurer.authenticationEntryPoint(this.jwtAuthenticationEnteryPoint);
                 })
                 .sessionManagement(sessionManagementConfigurer -> {

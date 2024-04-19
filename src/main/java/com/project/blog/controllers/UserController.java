@@ -7,12 +7,17 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@EnableMethodSecurity()
 public class UserController {
 
     @Autowired
@@ -39,6 +44,8 @@ public class UserController {
         UserDto updatedUserDto = this.userService.updateUser(userDto,userId);
         return new ResponseEntity<>(updatedUserDto,HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     ResponseEntity<?> deleteUser(@PathVariable("id") int id){
         this.userService.deleteUser(id);
